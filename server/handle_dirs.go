@@ -102,7 +102,13 @@ func (c *clientHandler) handleMLSD() {
 	if files, err := c.driver.ListFiles(c); err == nil {
 		if tr, err := c.TransferOpen(); err == nil {
 			defer c.TransferClose()
+			files = append(files, VirtualFileInfo{
+				Internal_name: "..",
+				Internal_mode: os.FileMode(0666) | os.ModeDir,
+				Internal_size: 0,
+			})
 			c.dirTransferMLSD(tr, files)
+
 		}
 	} else {
 		c.writeMessage(500, fmt.Sprintf("Could not list: %v", err))
